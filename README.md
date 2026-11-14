@@ -26,7 +26,7 @@ Test artifacts and an automated test suite for [still-ui](https://github.com/Dv2
 | Subscription carries usage headers | `test_subscription_sends_usage_headers` | contract | API |
 | Unknown subscription id → 404 | `test_unknown_subscription_id_is_not_found` | negative | API |
 | Links are not served on the panel port | `test_subscription_ids_are_not_served_on_the_panel_port` | error guessing | API |
-| Disabled client gets no links | `test_disabled_client_gets_no_links` | state transition | API |
+| Disabling a client shows on its subscription status | `test_disabled_client_is_reported_as_disabled` | state transition | API |
 | Browsers get an HTML page | `test_html_page_for_browsers` | content negotiation | API |
 | Login is locked after 5 failures, even with the right password | `test_correct_password_is_refused_after_too_many_failures` | state transition | API |
 | Existing session survives the lockout | `test_existing_session_keeps_working_during_the_lockout` | state transition | API |

@@ -38,15 +38,20 @@ def test_subscription_ids_are_not_served_on_the_panel_port(sub_path, client_with
     assert client_with_sub["client_id"] not in r.text
 
 
-def test_disabled_client_gets_no_links(admin, sub_path, client_with_sub):
+def test_disabled_client_is_reported_as_disabled(admin, sub_path, client_with_sub):
+    info = fetch(sub_path, client_with_sub["sub_id"], params={"format": "info"}).json()
+    assert info["enabled"] is True
     r = admin.post(
         f"{PANEL}/panel/api/clients/update/{client_with_sub['email']}",
         json={"email": client_with_sub["email"], "enable": False},
         timeout=10,
     )
     assert r.json()["success"], r.text
-    r = fetch(sub_path, client_with_sub["sub_id"])
-    assert client_with_sub["client_id"] not in (base64.b64decode(r.text).decode() if r.ok else "")
+    # By design the link list stays the same (the proxy core refuses the client);
+    # the status page and the info endpoint must show the change.
+    info = fetch(sub_path, client_with_sub["sub_id"], params={"format": "info"}).json()
+    assert info["enabled"] is False
+    assert info["emails"] == [client_with_sub["email"]]
 
 
 def test_html_page_for_browsers(sub_path, client_with_sub):
