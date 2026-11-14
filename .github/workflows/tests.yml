@@ -1,0 +1,40 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api-and-ui:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+      - name: Start still-ui (release tarball, checksum verified)
+        run: scripts/start-still-ui.sh
+      - name: Run tests
+        run: pytest --junitxml=report.xml
+      - name: Panel log on failure
+        if: failure()
+        run: docker logs qa-still-ui
+      - name: Test summary
+        if: always()
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import xml.etree.ElementTree as ET
+          root = ET.parse("report.xml").getroot()
+          s = root if root.tag == "testsuite" else root.find("testsuite")
+          print(f"### {s.get('tests')} tests, {s.get('failures')} failed, {s.get('errors')} errors, {s.get('skipped')} skipped")
+          PY

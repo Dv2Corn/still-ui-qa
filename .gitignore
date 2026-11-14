@@ -1,0 +1,5 @@
+.still-ui/
+__pycache__/
+.pytest_cache/
+report.xml
+test-results/
