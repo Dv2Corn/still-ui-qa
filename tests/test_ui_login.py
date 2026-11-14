@@ -2,9 +2,11 @@
 import re
 
 import pytest
-from playwright.sync_api import Page, expect
 
-from conftest import PANEL, PASSWORD, USER
+pytest.importorskip("playwright")
+from playwright.sync_api import Page, expect  # noqa: E402
+
+from conftest import PANEL, PASSWORD, USER  # noqa: E402
 
 pytestmark = pytest.mark.ui
 
